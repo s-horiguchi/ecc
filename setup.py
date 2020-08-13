@@ -1,3 +1,9 @@
+from distutils.core import setup
+import py2exe
+
+setup(console=["find_objects_gui.py"])
+
+"""
 from setuptools import setup
 
 with open("README.md", "r") as fh:
@@ -19,3 +25,4 @@ setup(
 	    "Operating System :: OS Independent",
 	]
 )
+"""
