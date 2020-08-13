@@ -1,12 +1,13 @@
 from ecc.ilastik_wrapper import PixelClassifier
 import easygui
 from easygui import EgStore
-import sys, os.path
+import sys, os.path, glob
 
 
 class Settings(EgStore):
     def __init__(self, filename="settings_apply_classifier.txt"):
-        self.ilastik_dir = "c:/Program Files/ilastik-1.3.3post3"
+        ilastik_list = glob.glob("c:/Program Files/ilastik-*")
+        self.ilastik_dir = ilastik_list[0] if ilastik_list else ""
         self.projfile = ""
         self.rawimg = ""
         self.outdir = ""
