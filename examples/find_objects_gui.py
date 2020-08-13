@@ -1,5 +1,6 @@
 from ecc.cellfinder import CellFinder
 import easygui
+import sys
 
 if __name__ == "__main__":
     # create a new instance
@@ -34,8 +35,14 @@ if __name__ == "__main__":
     msg = "Enter parameters:\n"
     err_msg = ""
     while True:
+        print(field_values)
         field_values = easygui.multenterbox(msg+err_msg, "Setting", labels, 
-                                        [str(f) for f in field_values])
+                                            [str(f) for f in field_values])
+        print(field_values)
+        if field_values is None:
+            print("Cancelled")
+            sys.exit(1)
+
         err_msg = ""
         try:
             vx = float(field_values[0])
