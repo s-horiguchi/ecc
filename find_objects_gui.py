@@ -24,6 +24,11 @@ class Settings(EgStore):
         self.filename = filename
         self.restore()
 
+def exit_if_none(var):
+    if var is None:
+        print("Cancelled")
+        sys.exit(1)
+
 
 if __name__ == "__main__":
     settings = Settings()
@@ -120,15 +125,18 @@ if __name__ == "__main__":
         filetypes=["*.hdf5", "*.h5"],
         default=settings.rawimg
     )
+    exit_if_none(settings.rawimg)
     settings.probimg = easygui.fileopenbox(
         title="Select probability image:",
         filetypes=["*.hdf5", "*.h5"],
         default=settings.probimg
     )
+    exit_if_none(settings.probimg)
     settings.outdir = easygui.diropenbox(
         title="Select output directory:",
         default=settings.outdir if settings.outdir else os.path.dirname(probimg)
     )
+    exit_if_none(settings.outdir)
 
     print("outdir: " + settings.outdir)
     print("raw img: " + settings.rawimg)

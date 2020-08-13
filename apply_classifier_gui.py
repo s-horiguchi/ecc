@@ -13,7 +13,12 @@ class Settings(EgStore):
         
         self.filename = filename
         self.restore()
-    
+
+def exit_if_none(var):
+    if var is None:
+        print("Cancelled")
+        sys.exit(1)
+
 if __name__ == "__main__":
     settings = Settings()
     
@@ -28,6 +33,7 @@ if __name__ == "__main__":
         title="Select ilastik path:",
         default=settings.ilastik_dir
     )
+    exit_if_none(settings.ilastik_dir)
     print("ilastik dir:", settings.ilastik_dir)
     settings.store()
     pc.set_ilastik_executable_path(settings.ilastik_dir)
@@ -38,9 +44,10 @@ if __name__ == "__main__":
         filetypes=["*.ilp"],
         default=settings.projfile
     )
+    exit_if_none(settings.projfile)
     print("project file:", settings.projfile)
     settings.store()
-    pc.set_project_file(setings.projfile)
+    pc.set_project_file(settings.projfile)
 
     # Optional: control CPU and memory usage
     #pc.set_num_threads(20)
@@ -52,6 +59,7 @@ if __name__ == "__main__":
         filetypes=["*.hdf5", "*.h5"],
         default=settings.rawimg
     )
+    exit_if_none(settings.rawimg)
     print("raw img:", settings.rawimg)
     settings.store()
     pc.set_input_image(settings.rawimg)
@@ -61,6 +69,7 @@ if __name__ == "__main__":
         title="Select output directory:",
         default=settings.outdir if settings.outdir else os.path.dirname(rawimg)
     )
+    exit_if_none(settings.outdir)
     print("out dir:", settings.outdir)
     settings.store()
     pc.set_output_dir(settings.outdir)
