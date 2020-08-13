@@ -793,6 +793,7 @@ class CellFinder:
 		print( ctime, ": Starting cell counting." )
 
 		# define shared object to exchange process states
+		mlp.freeze_supportr()
 		mgr = mlp.Manager()
 		state = mgr.dict()
 		state["num_elements_in_rqueue"] = 0
