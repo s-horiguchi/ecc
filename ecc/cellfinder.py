@@ -526,8 +526,7 @@ class Writer( mlp.Process ):
 
 	def set_writer_params( self, params ):
 
-		self.outdir = params["outdir"]
-		self.nickname = params["nickname"]
+		self.savename = params["savename"]
 		self.vx_size_x = params["vx_size_x"]
 		self.vx_size_y = params["vx_size_y"]
 		self.vx_size_z = params["vx_size_z"]
@@ -605,8 +604,7 @@ class Writer( mlp.Process ):
 		print( "Total number of cells:", table.shape[0] )
 
 		# save results
-		savename = self.outdir + self.nickname + '_cells.csv'
-		table.to_csv( savename,
+		table.to_csv( self.savename,
 						  sep=',', index=False,
 						  float_format='%.2f' )
 		print( "Cell table was saved as", savename )
@@ -619,7 +617,7 @@ class CellFinder:
 		# default parameters
 		self.verbose = True
 		self.num_workers = mlp.cpu_count()
-		self.nickname = "untitled"
+		self.savename = ""
 		self.blocksize = 120
 		self.overlap = 20
 		self.buffersize = 200
@@ -641,19 +639,9 @@ class CellFinder:
 		"""if True, print detailed outputs"""
 		self.verbose = TorF
 
-	def set_nickname( self, nickname ):
-		"""give it a nice nickname"""
-		self.nickname = nickname
-
-	def set_outdir( self, outdir ):
-		"""set directory to save results"""
-		if not outdir.endswith('/'):
-			warnings.warn("'outdir' must end with '/'!", SyntaxWarning)
-			outdir += '/'
-		if not os.path.exists(outdir):
-			print("'outdir' does not exit. Creating a new directory...")
-			os.mkdir(outdir)
-		self.outdir = outdir
+	def set_savename( self, savename ):
+		"""set a path to save the result csv"""
+		self.savename = savename
 
 	def set_image_voxel_size( self, vx_size ):
 		"""
@@ -841,8 +829,7 @@ class CellFinder:
 		# initialize writer process
 		writer = Writer( wque, state, verbose=True )
 		writer.set_writer_params({
-			"outdir": self.outdir,
-			"nickname": self.nickname,
+			"savename": self.savename,
 			"vx_size_x": self.vx_size_x,
 			"vx_size_y": self.vx_size_y,
 			"vx_size_z": self.vx_size_z,

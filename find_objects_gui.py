@@ -14,12 +14,11 @@ class Settings(EgStore):
         self.threshold = 0.70
         self.minvol = 2
         self.maxvol = 64
-        self.nickname = "test"
         self.intensity_mode = "obj_mean"
         
         self.rawimg = ""
         self.probimg = ""
-        self.outdir = ""
+        self.out_csv = ""
         
         self.filename = filename
         self.restore()
@@ -51,7 +50,6 @@ if __name__ == "__main__":
         settings.threshold,
         settings.minvol,
         settings.maxvol,
-        settings.nickname
     ]
     labels = [
         "voxel size(x)",
@@ -62,7 +60,6 @@ if __name__ == "__main__":
         "threshold",
         "min volume",
         "max volume",
-        "nickname",
     ]
 
     msg = "Enter parameters:\n"
@@ -100,7 +97,6 @@ if __name__ == "__main__":
         except ValueError:
             err_msg += "min/max volume must be integers\n"
 
-        settings.nickname = field_values[8]
         if err_msg == "":
             settings.store()
             break
@@ -117,36 +113,38 @@ if __name__ == "__main__":
     cf.set_max_particle_volume(settings.maxvol)
     cf.set_intensity_computation_mode(settings.intensity_mode)
 
-    # give it a nice nickname
-    cf.set_nickname(settings.nickname)
-
     settings.rawimg = easygui.fileopenbox(
         title="Select raw image:",
         filetypes=["*.hdf5", "*.h5"],
         default=settings.rawimg
     )
     exit_if_none(settings.rawimg)
+    print("raw img: " + settings.rawimg)
+    settings.store()
+    cf.set_raw_image_path(settings.rawimg)
+
     settings.probimg = easygui.fileopenbox(
         title="Select probability image:",
         filetypes=["*.hdf5", "*.h5"],
         default=settings.probimg
     )
     exit_if_none(settings.probimg)
-    settings.outdir = easygui.diropenbox(
-        title="Select output directory:",
-        default=settings.outdir if settings.outdir else os.path.dirname(settings.probimg)
-    )
-    exit_if_none(settings.outdir)
-
-    print("outdir: " + settings.outdir)
-    print("raw img: " + settings.rawimg)
     print("prob img: " + settings.probimg)
     settings.store()
-    
-    # set output directory
-    cf.set_outdir(settings.outdir)
-    cf.set_raw_image_path(settings.rawimg)
     cf.set_prob_image_path(settings.probimg)
 
+    settings.out_csv = easygui.filesavebox(
+        title="Set output csv:",
+        default=settings.out_csv if settings.out_csv else os.path.join(os.path.dirname(settings.probimg), "cells.csv")
+        filetypes=["*.csv"]
+    )
+    exit_if_none(settings.out_csv)
+    print("out csv: " + settings.out_csv)
+    settings.store()
+    cf.set_savename(settings.out_csv)
+
     # run!
-    cf.run_main()
+    try:
+        cf.run_main()
+    except:
+        easygui.exceptionbox()
