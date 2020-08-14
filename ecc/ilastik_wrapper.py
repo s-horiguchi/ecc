@@ -136,13 +136,13 @@ class PixelClassifier:
 		outp = "--output_filename_format=\"" + self.outdir + self.basename + "\""
 		inpt = "\"" + self.imgpath + "\""
 
-		opt = [ "--export_source='probabilities'",
+		opt = [ "--export_source=\"probabilities\"",
 				"--output_format=hdf5",
 				"--output_internal_path=probability",
-				"--cutout_subregion='[(None,None,None,0), (None,None,None,1)]'",
+				"--cutout_subregion=\"[(None,None,None,0), (None,None,None,1)]\"",
 				"--export_dtype=uint8",
-				"--pipeline_result_drange='(0.0,1.0)'",
-				"--export_drange='(0,255)'" ]
+				"--pipeline_result_drange=\"(0.0,1.0)\"",
+				"--export_drange=\"(0,255)\"" ]
 		opt = " ^\n".join( opt )
 
 		cmd = " ^\n".join( [ilmain, prj, outp, opt, inpt] )
