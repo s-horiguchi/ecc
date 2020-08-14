@@ -131,7 +131,7 @@ class PixelClassifier:
 		Return:
 			compiled command
 		"""
-		ilmain = "\"" + self.il_path + "\" --headless"
+		ilmain = "cmd /c \"" + self.il_path + "\" --headless"
 		prj = "--project=\"" + self.ilp + "\""
 		outp = "--output_filename_format=\"" + self.outdir + self.basename + "\""
 		inpt = "\"" + self.imgpath + "\""
