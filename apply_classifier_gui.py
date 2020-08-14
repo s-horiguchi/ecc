@@ -68,13 +68,13 @@ if __name__ == "__main__":
     # define output
     settings.out_probimg = easygui.filesavebox(
         title="Select output directory:",
-        default=settings.out_probimg if settings.out_probimg else os.path.join(os.path.dirname(settings.rawimg), "prob_image"),
+        default=settings.out_probimg if settings.out_probimg else os.path.join(os.path.dirname(settings.rawimg), "prob_image.h5"),
         filetypes=["*.hdf5", "*.h5"]
     )
     exit_if_none(settings.out_probimg)
-    print("out probability img:", settings.out_prob_img)
+    print("out probability img:", settings.out_probimg)
     settings.store()
-    pc.set_output_image(settings.out_prob_img)
+    pc.set_output_image(settings.out_probimg)
 
     # run!
     pc.run()
