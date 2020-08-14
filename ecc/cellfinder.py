@@ -133,6 +133,12 @@ class Reader( mlp.Process ):
 		self.hf_prob.close()
 		if self.flag_mask:
 			self.hf_mask.close()
+		self.hf_raw = None
+		self.hf_prob = None
+		self.hf_mask = None
+		self.dset_raw = None
+		self.dset_prob = None
+		self.dset_mask = None
 
 	def define_blocks( self ):
 		"""
