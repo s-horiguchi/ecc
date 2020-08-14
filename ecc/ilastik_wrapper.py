@@ -126,6 +126,16 @@ class PixelClassifier:
 		rc = pr.poll()
 		return rc
 
+	def _runShellCommand3(self, cmd, verbose=True):
+		env = os.environ.copy()
+		if self.num_threads is not None:
+			env["LAZYFLOW_THREADS"] =  str( self.num_threads )
+		if self.max_ram is not None:
+			env["LAZYFLOW_TOTAL_RAM_MB"] = str( self.max_ram )
+
+		rc = subprocess.call( cmd, shell=True, env=env )
+		return rc
+
 	def _compile_command(self):
 		"""
 		Return:
@@ -167,7 +177,7 @@ class PixelClassifier:
 
 		# run!
 		start_time = time.time()
-		rc = self._runShellCommand2(cmd, self.verbose)
+		rc = self._runShellCommand3(cmd, self.verbose)
 		elapsed_time = time.time() - start_time
 
 		# Check if the computation was successful
