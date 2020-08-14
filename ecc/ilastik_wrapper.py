@@ -61,8 +61,8 @@ class PixelClassifier:
 
 	def _set_default_settings(self):
 		"""set the default settings"""
-		self.num_threads = multiprocessing.cpu_count() # use all CPU cores
-		self.max_ram = 5000 # 5,000MB = 5GB
+		self.num_threads = None #multiprocessing.cpu_count() # use all CPU cores
+		self.max_ram = None #5000 # 5,000MB = 5GB
 		self.basename = "prob_image"
 		self.verbose = True
 
@@ -93,8 +93,10 @@ class PixelClassifier:
 		as soon as stdout buffer is flushed
 		"""
 		env = os.environ.copy()
-		env["LAZYFLOW_THREADS"] =  str( self.num_threads )
-		env["LAZYFLOW_TOTAL_RAM_MB"] = str( self.max_ram )
+		if self.num_threads is not None:
+			env["LAZYFLOW_THREADS"] =  str( self.num_threads )
+		if self.max_ram is not None:
+			env["LAZYFLOW_TOTAL_RAM_MB"] = str( self.max_ram )
 
 		pr = subprocess.Popen( cmd, shell=True, stdout=subprocess.PIPE,
 		                       stderr=subprocess.STDOUT, env=env )
