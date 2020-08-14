@@ -26,7 +26,7 @@ class Settings(EgStore):
 def exit_if_none(var):
     if var is None:
         print("Cancelled")
-        sys.exit(1)
+        sys.exit(0)
 
 
 if __name__ == "__main__":
@@ -70,7 +70,7 @@ if __name__ == "__main__":
         print("values:", field_values)
         if field_values is None:
             print("Cancelled")
-            sys.exit(1)
+            sys.exit(0)
 
         err_msg = ""
         try:
@@ -148,3 +148,5 @@ if __name__ == "__main__":
         cf.run_main()
     except:
         easygui.exceptionbox()
+    else:
+        easygui.msgbox("Successfully finished!")

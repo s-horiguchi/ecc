@@ -18,7 +18,7 @@ class Settings(EgStore):
 def exit_if_none(var):
     if var is None:
         print("Cancelled")
-        sys.exit(1)
+        sys.exit(0)
 
 if __name__ == "__main__":
     settings = Settings()
@@ -81,3 +81,5 @@ if __name__ == "__main__":
         pc.run()
     except RuntimeError:
         easygui.exceptionbox()
+    else:
+        easygui.msgbox("Successfully finished!")
