@@ -142,7 +142,7 @@ if __name__ == "__main__":
 
     settings.out_csv = easygui.filesavebox(
         title="Set output csv:",
-        default=settings.out_csv if settings.out_csv else os.path.join(os.path.dirname(settings.probimg), "cells.csv"),
+        default=settings.out_csv if settings.out_csv else os.path.join(os.path.dirname(settings.probimg), "cells_table.csv"),
         filetypes=["*.csv"]
     )
     exit_if_none(settings.out_csv)
