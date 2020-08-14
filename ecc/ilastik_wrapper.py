@@ -92,8 +92,12 @@ class PixelClassifier:
 		Runs a command on the shell. The output is printed 
 		as soon as stdout buffer is flushed
 		"""
+		env = os.environ.copy()
+		env["LAZYFLOW_THREADS"] =  str( self.num_threads )
+		env["LAZYFLOW_TOTAL_RAM_MB"] = str( self.max_ram )
+
 		pr = subprocess.Popen( cmd, shell=True, stdout=subprocess.PIPE,
-		                       stderr=subprocess.STDOUT )
+		                       stderr=subprocess.STDOUT, env=env )
 		iters = 0
 		while pr.poll() is None:
 			line = pr.stdout.readline()
@@ -125,12 +129,10 @@ class PixelClassifier:
 		Return:
 			compiled command
 		"""
-		ilmain = self.il_path + " --headless"
-		thrd = "LAZYFLOW_THREADS=" + str( self.num_threads )
-		mem = "LAZYFLOW_TOTAL_RAM_MB=" + str( self.max_ram )
-		prj = "--project=" + self.ilp
-		outp = "--output_filename_format=" + self.outdir + self.basename
-		inpt = self.imgpath
+		ilmain = "\"" + self.il_path + "\" --headless"
+		prj = "--project=\"" + self.ilp + "\""
+		outp = "--output_filename_format=\"" + self.outdir + self.basename + "\""
+		inpt = "\"" + self.imgpath "\""
 
 		opt = [ "--export_source='probabilities'",
 				"--output_format=hdf5",
@@ -139,9 +141,9 @@ class PixelClassifier:
 				"--export_dtype=uint8",
 				"--pipeline_result_drange='(0.0,1.0)'",
 				"--export_drange='(0,255)'" ]
-		opt = " \\\n".join( opt )
+		opt = " ^\n".join( opt )
 
-		cmd = " \\\n".join( [thrd, mem, ilmain, prj, outp, opt, inpt] )
+		cmd = " ^\n".join( [ilmain, prj, outp, opt, inpt] )
 
 		return cmd
 
