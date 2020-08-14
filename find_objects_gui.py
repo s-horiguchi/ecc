@@ -134,7 +134,7 @@ if __name__ == "__main__":
     exit_if_none(settings.probimg)
     settings.outdir = easygui.diropenbox(
         title="Select output directory:",
-        default=settings.outdir if settings.outdir else os.path.dirname(probimg)
+        default=settings.outdir if settings.outdir else os.path.dirname(settings.probimg)
     )
     exit_if_none(settings.outdir)
 

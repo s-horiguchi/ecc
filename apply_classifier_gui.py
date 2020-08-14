@@ -68,7 +68,7 @@ if __name__ == "__main__":
     # define output
     settings.outdir = easygui.diropenbox(
         title="Select output directory:",
-        default=settings.outdir if settings.outdir else os.path.dirname(rawimg)
+        default=settings.outdir if settings.outdir else os.path.dirname(settings.rawimg)
     )
     exit_if_none(settings.outdir)
     print("out dir:", settings.outdir)
