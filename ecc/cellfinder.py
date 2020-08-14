@@ -623,8 +623,8 @@ class Writer( mlp.Process ):
 		table.to_csv( self.savename,
 						  sep=',', index=False,
 						  float_format='%.2f' )
-		print( "Cell table was saved as", savename )
-		self.state["table_path"] = savename
+		print( "Cell table was saved as", self.savename )
+		self.state["table_path"] = self.savename
 
 class CellFinder:
 
