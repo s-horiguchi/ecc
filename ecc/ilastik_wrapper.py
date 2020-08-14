@@ -143,7 +143,7 @@ class PixelClassifier:
 		"""
 		ilmain = "\"" + self.il_path + "\" --headless"
 		prj = "--project=\"" + self.ilp + "\""
-		outp = "--output_filename_format=\"" + self.outdir + self.basename + "\""
+		outp = "--output_filename_format=\"" + os.path.join(self.outdir, self.basename) + "\""
 		inpt = "\"" + self.imgpath + "\""
 
 		opt = [ "--export_source=\"probabilities\"",
