@@ -72,6 +72,8 @@ if __name__ == "__main__":
         filetypes=["*.hdf5", "*.h5"]
     )
     exit_if_none(settings.out_probimg)
+    if os.path.splitext(settings.out_probimg)[1] == "":
+        settings.out_probimg += ".h5"
     print("out probability img:", settings.out_probimg)
     settings.store()
     pc.set_output_image(settings.out_probimg)

@@ -146,6 +146,8 @@ if __name__ == "__main__":
         filetypes=["*.csv"]
     )
     exit_if_none(settings.out_csv)
+    if os.path.splitext(settings.out_csv)[1] == "":
+        settings.out_csv += ".csv"
     print("out csv: " + settings.out_csv)
     settings.store()
     cf.set_savename(settings.out_csv)
