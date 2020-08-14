@@ -39,7 +39,7 @@ if __name__ == "__main__":
     cf.set_verbose(True)
 
     # Optional: set number of parallel CPU cores
-    #cf.set_num_workers(4)
+    cf.set_num_workers(1)
 
     field_values = [
         settings.vx,
