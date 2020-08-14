@@ -50,6 +50,7 @@ if __name__ == "__main__":
         settings.threshold,
         settings.minvol,
         settings.maxvol,
+        settings.intensity_mode,
     ]
     labels = [
         "voxel size(x)",
@@ -60,6 +61,7 @@ if __name__ == "__main__":
         "threshold",
         "min volume",
         "max volume",
+        "mode (obj_mean or max)"
     ]
 
     msg = "Enter parameters:\n"
@@ -96,6 +98,11 @@ if __name__ == "__main__":
             settings.maxvol = int(field_values[7])
         except ValueError:
             err_msg += "min/max volume must be integers\n"
+
+        if field_values[8] not in ["obj_mean", "max"]:
+            err_msg += "mode must be 'obj_mean' or 'max'"
+        else:
+            settings.intensity_mode = field_values[8]
 
         if err_msg == "":
             settings.store()
