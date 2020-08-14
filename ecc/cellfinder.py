@@ -47,6 +47,10 @@ class Reader( mlp.Process ):
 		# verbose level
 		self.verbose = verbose
 
+		self.raw_path = None
+		self.prob_path = None
+		self.mask_path = None
+
 		# some default settings
 		self.flag_mask = False
 
@@ -69,29 +73,34 @@ class Reader( mlp.Process ):
 		"""
 		get handles of HDF5 images
 		"""
+		self.raw_path = raw_path
+		self.prob_path = prob_path
+		self.mask_path = mask_path
+
+	def get_HDF5_handle(self):
 		# get HDF5 handle of raw image
-		self.hf_raw, self.dset_raw = self._get_HDF5_handle( raw_path )
+		self.hf_raw, self.dset_raw = self._get_HDF5_handle( self.raw_path )
 		if self.verbose:
-			print( "Raw image is ready;", raw_path )
+			print( "Raw image is ready;", self.raw_path )
 			print( "Data type:", self.dset_raw.dtype )
 
 		# get HDF5 handle of probability image
-		self.hf_prob, self.dset_prob = self._get_HDF5_handle( prob_path )
+		self.hf_prob, self.dset_prob = self._get_HDF5_handle( self.prob_path )
 		dt = self.dset_prob.dtype
 		if (dt == np.uint8) or (dt == np.uint16):
 			self.prob_dtype = dt
 		else:
 			raise ValueError("probability image must be either uint16 or uint8 datatype!")
 		if self.verbose:
-			print( "Probaility image is ready;", prob_path )
+			print( "Probaility image is ready;", self.prob_path )
 			print( "Data type:", self.dset_prob.dtype )
 
 		# get HDF5 handle of mask image
-		if mask_path is not None:
-			self.hf_mask, self.dset_mask = self._get_HDF5_handle( mask_path )
+		if self.mask_path is not None:
+			self.hf_mask, self.dset_mask = self._get_HDF5_handle( self.mask_path )
 			self.flag_mask = True
 			if self.verbose:
-				print( "Mask image is ready;", mask_path )
+				print( "Mask image is ready;", self.mask_path )
 				print( "Data type:", self.dset_mask.dtype )
 
 		# check image size
@@ -173,10 +182,12 @@ class Reader( mlp.Process ):
 		"""
 		s = self.blocklist[blockidx]
 		# load raw image
-		raw = np.array(self.dset_raw[ s[0]:s[1], s[2]:s[3], s[4]:s[5] ])
+		raw = self.dset_raw[ s[0]:s[1], s[2]:s[3], s[4]:s[5] ]
+                print(raw)
+                print(type(raw))
 
 		# load probability iamge
-		prob = np.array(self.dset_prob[ s[0]:s[1], s[2]:s[3], s[4]:s[5] ])
+		prob = self.dset_prob[ s[0]:s[1], s[2]:s[3], s[4]:s[5] ]
 		# squeeze unncessary dimension
 		prob = np.squeeze( prob )
 		# normalize probability image in range [0,255]
@@ -188,7 +199,7 @@ class Reader( mlp.Process ):
 
 		# load mask image
 		if self.flag_mask:
-			mask = np.array(self.dset_mask[ s[0]:s[1], s[2]:s[3], s[4]:s[5] ])
+			mask = self.dset_mask[ s[0]:s[1], s[2]:s[3], s[4]:s[5] ]
 			mask = mask > 0
 		else:
 			mask = np.zeros( raw.shape, dtype=np.bool )
@@ -198,6 +209,7 @@ class Reader( mlp.Process ):
 	def run( self ):
 		"""main"""
 		try:
+			self.get_HDF5_handle()
 			idx = 0
 			while idx < len(self.blocklist):
 				# check buffered data size
@@ -800,6 +812,8 @@ class CellFinder:
 			reader.set_HDF5_paths( self.raw_im_path, self.prob_im_path, self.mask_im_path )
 		else:
 			reader.set_HDF5_paths( self.raw_im_path, self.prob_im_path )
+		reader.get_HDF5_handle()
+		reader.release_handles()
 		reader.define_blocks()
 		# store some properties
 		self.blocklist = reader.blocklist
