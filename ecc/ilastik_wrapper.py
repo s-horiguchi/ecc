@@ -46,7 +46,7 @@ class PixelClassifier:
 	def set_output_image(self, out_path):
 		out_path = os.path.splitext(out_path)[0]
 		outdir = os.path.dirname(out_path)
-		basename = os.path.basername(out_path)
+		basename = os.path.basename(out_path)
 		self.set_output_dir(outdir)
 		self.set_basename(basename)
 
