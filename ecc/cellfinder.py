@@ -183,8 +183,6 @@ class Reader( mlp.Process ):
 		s = self.blocklist[blockidx]
 		# load raw image
 		raw = self.dset_raw[ s[0]:s[1], s[2]:s[3], s[4]:s[5] ]
-                print(raw)
-                print(type(raw))
 
 		# load probability iamge
 		prob = self.dset_prob[ s[0]:s[1], s[2]:s[3], s[4]:s[5] ]
