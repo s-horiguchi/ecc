@@ -55,7 +55,7 @@ if __name__ == "__main__":
     #pc.set_max_memory_size(60000) # in MBs
 
     # define input image
-    settings.rawimg = easygui.fileoepnbox(
+    settings.rawimg = easygui.fileopenbox(
         title="Select raw image:",
         filetypes=["*.hdf5", "*.h5"],
         default=settings.rawimg
