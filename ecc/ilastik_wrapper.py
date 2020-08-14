@@ -43,6 +43,13 @@ class PixelClassifier:
 		"""set the maximum memory amount (in MB) allocated for ilastik classifier"""
 		self.max_ram = int(max_ram)
 
+	def set_output_image(self, out_path):
+		out_path = os.path.splitext(out_path)[0]
+		outdir = os.path.dirname(out_path)
+		basename = os.path.basername(out_path)
+		self.set_output_dir(outdir)
+		self.set_basename(basename)
+
 	def set_output_dir(self, outdir):
 		"""set directory to save results"""
 		if not os.path.exists(outdir):

@@ -10,7 +10,7 @@ class Settings(EgStore):
         self.ilastik_dir = ilastik_list[0] if ilastik_list else ""
         self.projfile = ""
         self.rawimg = ""
-        self.outdir = ""
+        self.out_probimg = ""
         
         self.filename = filename
         self.restore()
@@ -66,14 +66,15 @@ if __name__ == "__main__":
     pc.set_input_image(settings.rawimg)
 
     # define output
-    settings.outdir = easygui.diropenbox(
+    settings.out_probimg = easygui.filesavebox(
         title="Select output directory:",
-        default=settings.outdir if settings.outdir else os.path.dirname(settings.rawimg)
+        default=settings.out_probimg if settings.out_probimg else os.path.join(os.path.dirname(settings.rawimg), "prob_image"),
+        filetypes=["*.hdf5", "*.h5"]
     )
-    exit_if_none(settings.outdir)
-    print("out dir:", settings.outdir)
+    exit_if_none(settings.out_probimg)
+    print("out probability img:", settings.out_prob_img)
     settings.store()
-    pc.set_output_dir(settings.outdir)
+    pc.set_output_image(settings.out_prob_img)
 
     # run!
     pc.run()
