@@ -173,10 +173,10 @@ class Reader( mlp.Process ):
 		"""
 		s = self.blocklist[blockidx]
 		# load raw image
-		raw = self.dset_raw[ s[0]:s[1], s[2]:s[3], s[4]:s[5] ]
+		raw = np.array(self.dset_raw[ s[0]:s[1], s[2]:s[3], s[4]:s[5] ])
 
 		# load probability iamge
-		prob = self.dset_prob[ s[0]:s[1], s[2]:s[3], s[4]:s[5] ]
+		prob = np.array(self.dset_prob[ s[0]:s[1], s[2]:s[3], s[4]:s[5] ])
 		# squeeze unncessary dimension
 		prob = np.squeeze( prob )
 		# normalize probability image in range [0,255]
@@ -188,7 +188,7 @@ class Reader( mlp.Process ):
 
 		# load mask image
 		if self.flag_mask:
-			mask = self.dset_mask[ s[0]:s[1], s[2]:s[3], s[4]:s[5] ]
+			mask = np.array(self.dset_mask[ s[0]:s[1], s[2]:s[3], s[4]:s[5] ])
 			mask = mask > 0
 		else:
 			mask = np.zeros( raw.shape, dtype=np.bool )
