@@ -133,7 +133,7 @@ class PixelClassifier:
 		if self.max_ram is not None:
 			env["LAZYFLOW_TOTAL_RAM_MB"] = str( self.max_ram )
 
-		rc = subprocess.call( cmd, shell=True, env=env )
+		rc = subprocess.call( cmd.replace("^\n", ""), env=env )
 		return rc
 
 	def _compile_command(self):
@@ -141,7 +141,7 @@ class PixelClassifier:
 		Return:
 			compiled command
 		"""
-		ilmain = "cmd /c \"" + self.il_path + "\" --headless"
+		ilmain = "\"" + self.il_path + "\" --headless"
 		prj = "--project=\"" + self.ilp + "\""
 		outp = "--output_filename_format=\"" + self.outdir + self.basename + "\""
 		inpt = "\"" + self.imgpath + "\""
