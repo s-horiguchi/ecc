@@ -2,6 +2,7 @@ from ecc.cellfinder import CellFinder
 import easygui
 from easygui import EgStore
 import sys, os.path
+import multiprocessing as mp
 
 
 class Settings(EgStore):
@@ -30,6 +31,9 @@ def exit_if_none(var):
 
 
 if __name__ == "__main__":
+    mp.freeze_support()
+
+    # restore settings
     settings = Settings()
     
     # create a new instance
