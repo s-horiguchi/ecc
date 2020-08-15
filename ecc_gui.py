@@ -257,7 +257,7 @@ if __name__ == "__main__":
         if selected == choices[0]:
             # start ilastik in the background
             while True:
-                path = os.path.join(settings.ilastik_dir, "run-ilastik.bat")
+                path = os.path.join(settings.ilastik_dir, "ilastik.exe")
                 if os.path.exists(path): break
 
                 print("ilastik dir is invalid. please select ilastik path")
