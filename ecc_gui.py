@@ -254,7 +254,7 @@ if __name__ == "__main__":
         )
 
         exit_if_none(selected)
-        if selected[0] == choices[0]:
+        if selected == choices[0]:
             # start ilastik in the background
             while True:
                 path = os.path.join(settings.ilastik_dir, "run-ilastik.bat")
@@ -269,9 +269,9 @@ if __name__ == "__main__":
                 settings.store()
             print("ilastik dir:", settings.ilastik_dir)            
             p = sp.Popen(path)
-            print("Started ilastik [PID={}".format(p.pid))
+            print("Started ilastik [PID={}]".format(p.pid))
 
-        elif selected[0] == choices[1]:
+        elif selected == choices[1]:
             apply_classifier(settings)
-        elif selected[0] == choices[2]:
+        elif selected == choices[2]:
             find_objects(settings)
