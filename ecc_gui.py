@@ -1,12 +1,21 @@
+from ecc.ilastik_wrapper import PixelClassifier
 from ecc.cellfinder import CellFinder
 import easygui
 from easygui import EgStore
-import sys, os.path
+import sys, os.path, glob
 import multiprocessing as mp
+import subprocess as sp
 
 
 class Settings(EgStore):
-    def __init__(self, filename="settings_find_objects.txt"):
+    def __init__(self, filename="settings_ecc.txt"):
+        ilastik_list = glob.glob("c:/Program Files/ilastik-*")
+        self.ilastik_dir = ilastik_list[0] if ilastik_list else ""
+        self.projfile = ""
+        self.rawimg = ""
+        self.out_probimg = ""
+        
+        
         self.vx = 6.45
         self.vy = 6.45
         self.vz = 7.0
@@ -29,13 +38,73 @@ def exit_if_none(var):
         print("Cancelled")
         sys.exit(0)
 
+def apply_classifier(settings):
+        # create a new instance
+    pc = PixelClassifier()
 
-if __name__ == "__main__":
-    mp.freeze_support()
+    # force it print detailed progress
+    pc.set_verbose(True)
 
-    # restore settings
-    settings = Settings()
-    
+    # set ilastik path
+    while not os.path.exists(os.path.join(settings.ilastik_dir, "run-ilastik.bat")):
+        print("ilastik dir is invalid. please select ilastik path")
+        settings.ilastik_dir = easygui.diropenbox(
+            title="Select ilastik path:",
+            default=settings.ilastik_dir
+        )
+        exit_if_none(settings.ilastik_dir)
+        settings.store()
+    print("ilastik dir:", settings.ilastik_dir)
+    pc.set_ilastik_executable_path(settings.ilastik_dir)
+
+    # set path to ilastik project
+    settings.projfile = easygui.fileopenbox(
+        title="Select ilastik project file",
+        filetypes=["*.ilp"],
+        default=settings.projfile
+    )
+    exit_if_none(settings.projfile)
+    print("project file:", settings.projfile)
+    settings.store()
+    pc.set_project_file(settings.projfile)
+
+    # Optional: control CPU and memory usage
+    #pc.set_num_threads(20)
+    #pc.set_max_memory_size(60000) # in MBs
+
+    # define input image
+    settings.rawimg = easygui.fileopenbox(
+        title="Select raw image:",
+        filetypes=["*.hdf5", "*.h5"],
+        default=settings.rawimg
+    )
+    exit_if_none(settings.rawimg)
+    print("raw img:", settings.rawimg)
+    settings.store()
+    pc.set_input_image(settings.rawimg)
+
+    # define output
+    settings.out_probimg = easygui.filesavebox(
+        title="Set output probability image:",
+        default=settings.out_probimg if settings.out_probimg else os.path.join(os.path.dirname(settings.rawimg), "prob_image.h5"),
+        filetypes=["*.hdf5", "*.h5"]
+    )
+    exit_if_none(settings.out_probimg)
+    if os.path.splitext(settings.out_probimg)[1] == "":
+        settings.out_probimg += ".h5"
+    print("out probability img:", settings.out_probimg)
+    settings.store()
+    pc.set_output_image(settings.out_probimg)
+
+    # run!
+    try:
+        pc.run()
+    except RuntimeError:
+        easygui.exceptionbox()
+    else:
+        easygui.msgbox("Successfully finished!")
+
+def find_objects(settings):
     # create a new instance
     cf = CellFinder()
 
@@ -163,3 +232,46 @@ if __name__ == "__main__":
         easygui.exceptionbox()
     else:
         easygui.msgbox("Successfully finished!")
+
+
+if __name__ == "__main__":
+    mp.freeze_support()
+
+    # restore settings
+    settings = Settings()
+
+    choices = [
+        "Start ilastik",
+        "Apply classifier",
+        "Find Objects"
+    ]
+
+    while True:
+        selected = easygui.choicebox(
+            msg="Welcome to ecc!",
+            title="ecc",
+            choices=choices
+        )
+
+        exit_if_none(selected)
+        if selected[0] == choices[0]:
+            # start ilastik in the background
+            while True:
+                path = os.path.join(settings.ilastik_dir, "run-ilastik.bat")
+                if os.path.exists(path): break
+
+                print("ilastik dir is invalid. please select ilastik path")
+                settings.ilastik_dir = easygui.diropenbox(
+                    title="Select ilastik path:",
+                    default=settings.ilastik_dir
+                )
+                exit_if_none(settings.ilastik_dir)
+                settings.store()
+            print("ilastik dir:", settings.ilastik_dir)            
+            p = sp.Popen(path)
+            print("Started ilastik [PID={}".format(p.pid))
+
+        elif selected[0] == choices[1]:
+            apply_classifier(settings)
+        elif selected[0] == choices[2]:
+            find_objects(settings)
