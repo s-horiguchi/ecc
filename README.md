@@ -59,9 +59,11 @@ To learn how to use ecc, please read the [documentation](https://dspsleeporg.git
 
 ## GUI for Windows Users
 
-In `windows_gui` branch, there is a simple GUI based program `ecc_gui.py`.
+There is a simple GUI based program `ecc_gui.py`.
 
 It creates `settings_ecc.txt` in the same directory to save your last settings.
+
+You can download the installer [here](https://github.com/s-horiguchi/ecc/releases/tag/v0.1).
 
 ### Building executables
 
