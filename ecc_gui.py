@@ -118,23 +118,23 @@ def find_objects(settings):
         settings.vx,
         settings.vy,
         settings.vz,
-        settings.bsize,
-        settings.overlap,
         settings.threshold,
         settings.minvol,
         settings.maxvol,
         settings.intensity_mode,
+        settings.bsize,
+        settings.overlap,
     ]
     labels = [
-        "voxel size(x)",
-        "voxel size(y)",
-        "voxel size(z)",
-        "blocksize",
-        "overlap",
-        "threshold",
-        "min volume",
-        "max volume",
-        "mode (obj_mean or max)"
+        "Voxel size(x) in um",
+        "Voxel size(y) in um",
+        "Voxel size(z) in um",
+        "Threshold",
+        "Min volume in voxel",
+        "Max volume in voxel",
+        "Mode (obj_mean or max)",
+        "Blocksize",
+        "Overlap"
     ]
 
     msg = "Enter parameters:\n"
@@ -156,26 +156,26 @@ def find_objects(settings):
             err_msg += "voxel size must be decimal numbers\n"
             
         try:
-            settings.bsize = int(field_values[3])
-            settings.overlap = int(field_values[4])
-        except ValueError:
-            err_msg += "blocksize and overlap must be integers\n"
-
-        try:
-            settings.threshold = float(field_values[5])
+            settings.threshold = float(field_values[3])
         except ValueError:
             err_msg += "threshold must be a decimal number\n"
 
         try:
-            settings.minvol = int(field_values[6])
-            settings.maxvol = int(field_values[7])
+            settings.minvol = int(field_values[4])
+            settings.maxvol = int(field_values[5])
         except ValueError:
             err_msg += "min/max volume must be integers\n"
 
-        if field_values[8] not in ["obj_mean", "max"]:
+        if field_values[6] not in ["obj_mean", "max"]:
             err_msg += "mode must be 'obj_mean' or 'max'"
         else:
-            settings.intensity_mode = field_values[8]
+            settings.intensity_mode = field_values[6]
+
+        try:
+            settings.bsize = int(field_values[7])
+            settings.overlap = int(field_values[8])
+        except ValueError:
+            err_msg += "blocksize and overlap must be integers\n"
 
         if err_msg == "":
             settings.store()
