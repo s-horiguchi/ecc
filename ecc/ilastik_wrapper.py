@@ -28,11 +28,11 @@ class PixelClassifier:
 
 	def set_ilastik_executable_path(self, path):
 		"""set the path to the ilastik executables"""
-		il_path = os.path.join(path, 'run_ilastik.sh')
+		il_path = os.path.join(path, 'ilastik.exe') # 'run-ilastik.bat' did not work when compiled
 		if os.path.exists(il_path):
 			self.il_path = il_path
 		else:
-			msg = "Cannot find 'run_ilastik.sh'. Check your ilastik path again!"
+			msg = "Cannot find 'ilastik.exe'. Check your ilastik path again!"
 			raise ValueError(msg)
 
 	def set_num_threads(self, num_threads):
@@ -42,6 +42,13 @@ class PixelClassifier:
 	def set_max_memory_size(self, max_ram):
 		"""set the maximum memory amount (in MB) allocated for ilastik classifier"""
 		self.max_ram = int(max_ram)
+
+	def set_output_image(self, out_path):
+		out_path = os.path.splitext(out_path)[0]
+		outdir = os.path.dirname(out_path)
+		basename = os.path.basename(out_path)
+		self.set_output_dir(outdir)
+		self.set_basename(basename)
 
 	def set_output_dir(self, outdir):
 		"""set directory to save results"""
@@ -61,8 +68,8 @@ class PixelClassifier:
 
 	def _set_default_settings(self):
 		"""set the default settings"""
-		self.num_threads = multiprocessing.cpu_count() # use all CPU cores
-		self.max_ram = 5000 # 5,000MB = 5GB
+		self.num_threads = None #multiprocessing.cpu_count() # use all CPU cores
+		self.max_ram = None #5000 # 5,000MB = 5GB
 		self.basename = "prob_image"
 		self.verbose = True
 
@@ -92,8 +99,14 @@ class PixelClassifier:
 		Runs a command on the shell. The output is printed 
 		as soon as stdout buffer is flushed
 		"""
+		env = os.environ.copy()
+		if self.num_threads is not None:
+			env["LAZYFLOW_THREADS"] =  str( self.num_threads )
+		if self.max_ram is not None:
+			env["LAZYFLOW_TOTAL_RAM_MB"] = str( self.max_ram )
+
 		pr = subprocess.Popen( cmd, shell=True, stdout=subprocess.PIPE,
-		                       stderr=subprocess.STDOUT )
+		                       stderr=subprocess.STDOUT, env=env )
 		iters = 0
 		while pr.poll() is None:
 			line = pr.stdout.readline()
@@ -120,28 +133,36 @@ class PixelClassifier:
 		rc = pr.poll()
 		return rc
 
+	def _runShellCommand3(self, cmd, verbose=True):
+		env = os.environ.copy()
+		if self.num_threads is not None:
+			env["LAZYFLOW_THREADS"] =  str( self.num_threads )
+		if self.max_ram is not None:
+			env["LAZYFLOW_TOTAL_RAM_MB"] = str( self.max_ram )
+
+		rc = subprocess.call( cmd.replace("^\n", ""), env=env )
+		return rc
+
 	def _compile_command(self):
 		"""
 		Return:
 			compiled command
 		"""
-		ilmain = self.il_path + " --headless"
-		thrd = "LAZYFLOW_THREADS=" + str( self.num_threads )
-		mem = "LAZYFLOW_TOTAL_RAM_MB=" + str( self.max_ram )
-		prj = "--project=" + self.ilp
-		outp = "--output_filename_format=" + self.outdir + self.basename
-		inpt = self.imgpath
+		ilmain = "\"" + self.il_path + "\" --headless"
+		prj = "--project=\"" + self.ilp + "\""
+		outp = "--output_filename_format=\"" + os.path.join(self.outdir, self.basename) + "\""
+		inpt = "\"" + self.imgpath + "\""
 
-		opt = [ "--export_source='probabilities'",
+		opt = [ "--export_source=\"probabilities\"",
 				"--output_format=hdf5",
 				"--output_internal_path=probability",
-				"--cutout_subregion='[(None,None,None,0), (None,None,None,1)]'",
+				"--cutout_subregion=\"[(None,None,None,0), (None,None,None,1)]\"",
 				"--export_dtype=uint8",
-				"--pipeline_result_drange='(0.0,1.0)'",
-				"--export_drange='(0,255)'" ]
-		opt = " \\\n".join( opt )
+				"--pipeline_result_drange=\"(0.0,1.0)\"",
+				"--export_drange=\"(0,255)\"" ]
+		opt = " ^\n".join( opt )
 
-		cmd = " \\\n".join( [thrd, mem, ilmain, prj, outp, opt, inpt] )
+		cmd = " ^\n".join( [ilmain, prj, outp, opt, inpt] )
 
 		return cmd
 
@@ -163,7 +184,7 @@ class PixelClassifier:
 
 		# run!
 		start_time = time.time()
-		rc = self._runShellCommand2(cmd, self.verbose)
+		rc = self._runShellCommand3(cmd, self.verbose)
 		elapsed_time = time.time() - start_time
 
 		# Check if the computation was successful

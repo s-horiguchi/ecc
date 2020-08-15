@@ -47,6 +47,10 @@ class Reader( mlp.Process ):
 		# verbose level
 		self.verbose = verbose
 
+		self.raw_path = None
+		self.prob_path = None
+		self.mask_path = None
+
 		# some default settings
 		self.flag_mask = False
 
@@ -69,29 +73,34 @@ class Reader( mlp.Process ):
 		"""
 		get handles of HDF5 images
 		"""
+		self.raw_path = raw_path
+		self.prob_path = prob_path
+		self.mask_path = mask_path
+
+	def get_HDF5_handle(self):
 		# get HDF5 handle of raw image
-		self.hf_raw, self.dset_raw = self._get_HDF5_handle( raw_path )
+		self.hf_raw, self.dset_raw = self._get_HDF5_handle( self.raw_path )
 		if self.verbose:
-			print( "Raw image is ready;", raw_path )
+			print( "Raw image is ready;", self.raw_path )
 			print( "Data type:", self.dset_raw.dtype )
 
 		# get HDF5 handle of probability image
-		self.hf_prob, self.dset_prob = self._get_HDF5_handle( prob_path )
+		self.hf_prob, self.dset_prob = self._get_HDF5_handle( self.prob_path )
 		dt = self.dset_prob.dtype
 		if (dt == np.uint8) or (dt == np.uint16):
 			self.prob_dtype = dt
 		else:
 			raise ValueError("probability image must be either uint16 or uint8 datatype!")
 		if self.verbose:
-			print( "Probaility image is ready;", prob_path )
+			print( "Probaility image is ready;", self.prob_path )
 			print( "Data type:", self.dset_prob.dtype )
 
 		# get HDF5 handle of mask image
-		if mask_path is not None:
-			self.hf_mask, self.dset_mask = self._get_HDF5_handle( mask_path )
+		if self.mask_path is not None:
+			self.hf_mask, self.dset_mask = self._get_HDF5_handle( self.mask_path )
 			self.flag_mask = True
 			if self.verbose:
-				print( "Mask image is ready;", mask_path )
+				print( "Mask image is ready;", self.mask_path )
 				print( "Data type:", self.dset_mask.dtype )
 
 		# check image size
@@ -124,6 +133,12 @@ class Reader( mlp.Process ):
 		self.hf_prob.close()
 		if self.flag_mask:
 			self.hf_mask.close()
+		self.hf_raw = None
+		self.hf_prob = None
+		self.hf_mask = None
+		self.dset_raw = None
+		self.dset_prob = None
+		self.dset_mask = None
 
 	def define_blocks( self ):
 		"""
@@ -198,6 +213,7 @@ class Reader( mlp.Process ):
 	def run( self ):
 		"""main"""
 		try:
+			self.get_HDF5_handle()
 			idx = 0
 			while idx < len(self.blocklist):
 				# check buffered data size
@@ -526,8 +542,7 @@ class Writer( mlp.Process ):
 
 	def set_writer_params( self, params ):
 
-		self.outdir = params["outdir"]
-		self.nickname = params["nickname"]
+		self.savename = params["savename"]
 		self.vx_size_x = params["vx_size_x"]
 		self.vx_size_y = params["vx_size_y"]
 		self.vx_size_z = params["vx_size_z"]
@@ -605,12 +620,11 @@ class Writer( mlp.Process ):
 		print( "Total number of cells:", table.shape[0] )
 
 		# save results
-		savename = self.outdir + self.nickname + '_cells.csv'
-		table.to_csv( savename,
+		table.to_csv( self.savename,
 						  sep=',', index=False,
 						  float_format='%.2f' )
-		print( "Cell table was saved as", savename )
-		self.state["table_path"] = savename
+		print( "Cell table was saved as", self.savename )
+		self.state["table_path"] = self.savename
 
 class CellFinder:
 
@@ -619,7 +633,7 @@ class CellFinder:
 		# default parameters
 		self.verbose = True
 		self.num_workers = mlp.cpu_count()
-		self.nickname = "untitled"
+		self.savename = ""
 		self.blocksize = 120
 		self.overlap = 20
 		self.buffersize = 200
@@ -641,19 +655,9 @@ class CellFinder:
 		"""if True, print detailed outputs"""
 		self.verbose = TorF
 
-	def set_nickname( self, nickname ):
-		"""give it a nice nickname"""
-		self.nickname = nickname
-
-	def set_outdir( self, outdir ):
-		"""set directory to save results"""
-		if not outdir.endswith('/'):
-			warnings.warn("'outdir' must end with '/'!", SyntaxWarning)
-			outdir += '/'
-		if not os.path.exists(outdir):
-			print("'outdir' does not exit. Creating a new directory...")
-			os.mkdir(outdir)
-		self.outdir = outdir
+	def set_savename( self, savename ):
+		"""set a path to save the result csv"""
+		self.savename = savename
 
 	def set_image_voxel_size( self, vx_size ):
 		"""
@@ -811,6 +815,8 @@ class CellFinder:
 			reader.set_HDF5_paths( self.raw_im_path, self.prob_im_path, self.mask_im_path )
 		else:
 			reader.set_HDF5_paths( self.raw_im_path, self.prob_im_path )
+		reader.get_HDF5_handle()
+		reader.release_handles()
 		reader.define_blocks()
 		# store some properties
 		self.blocklist = reader.blocklist
@@ -840,8 +846,7 @@ class CellFinder:
 		# initialize writer process
 		writer = Writer( wque, state, verbose=True )
 		writer.set_writer_params({
-			"outdir": self.outdir,
-			"nickname": self.nickname,
+			"savename": self.savename,
 			"vx_size_x": self.vx_size_x,
 			"vx_size_y": self.vx_size_y,
 			"vx_size_z": self.vx_size_z,

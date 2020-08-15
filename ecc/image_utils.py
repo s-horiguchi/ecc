@@ -4,7 +4,10 @@ import numpy as np
 import pandas as pd
 import nibabel as nib
 from scipy import ndimage as ndi
-from skimage.external import tifffile
+try:
+    from skimage.external import tifffile
+except ImportError:
+    import tifffile
 from skimage.filters import gaussian
 from skimage.transform import downscale_local_mean, resize
 from skimage.morphology import erosion
