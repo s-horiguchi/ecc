@@ -28,11 +28,11 @@ class PixelClassifier:
 
 	def set_ilastik_executable_path(self, path):
 		"""set the path to the ilastik executables"""
-		il_path = os.path.join(path, 'run-ilastik.bat')
+		il_path = os.path.join(path, 'ilastik.exe') # 'run-ilastik.bat' did not work when compiled
 		if os.path.exists(il_path):
 			self.il_path = il_path
 		else:
-			msg = "Cannot find 'run-ilastik.bat'. Check your ilastik path again!"
+			msg = "Cannot find 'ilastik.exe'. Check your ilastik path again!"
 			raise ValueError(msg)
 
 	def set_num_threads(self, num_threads):

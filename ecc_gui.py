@@ -46,7 +46,7 @@ def apply_classifier(settings):
     pc.set_verbose(True)
 
     # set ilastik path
-    while not os.path.exists(os.path.join(settings.ilastik_dir, "run-ilastik.bat")):
+    while not os.path.exists(os.path.join(settings.ilastik_dir, "ilastik.exe")):
         print("ilastik dir is invalid. please select ilastik path")
         settings.ilastik_dir = easygui.diropenbox(
             title="Select ilastik path:",
