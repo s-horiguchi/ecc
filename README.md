@@ -59,15 +59,18 @@ To learn how to use ecc, please read the [documentation](https://dspsleeporg.git
 
 ## GUI for Windows Users
 
-In `windows_gui` branch, there are simple GUI programs:
- * `apply_classifier_gui.py`
- * `find_objects_gui.py`
+In `windows_gui` branch, there is a simple GUI based program `ecc_gui.py`.
 
-These programs create `settings_apply_classifier.txt` and `settings_find_objects.txt` in the same directory to save your last settings.
+It creates `settings_ecc.txt` in the same directory to save your last settings.
 
 ### Building executables
 
 For building a executable files,
 1. Install Anaconda3 and manually install some libraries because `environment.yml` does not work on Windows.
 2. Install [Pyinstaller](http://www.pyinstaller.org/) with pip command.
-3. Just run `pyinstall apply_classifier_gui.py --onefile` and `pyinstall find_objects_gui.py --onefile`
+3. Just run `pyinstall ecc_gui.py`. The executable and other files are created in `dist/ecc-gui` directory. If you prefer single exe file, add `--onefile` option to the command, though the single exe will be very large and slow on each startup.
+
+### Building Installer
+
+4. Install [NSIS](https://nsis.sourceforge.io/)
+5. Launch NSIS and compie `install.nsi` in our repository, which produces `install-ecc.exe`.
