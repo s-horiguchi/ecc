@@ -8,6 +8,11 @@ InstallDirRegKey HKCU "Software\ecc" ""
 RequestExecutionLevel user
 SetCompressor lzma
 
+;------- Variables -------
+
+Var StartMenuFolder
+
+
 ;------- Interface Settings -------
 !define MUI_WELCOMEPAGE_TITLE "ecc installer"
 !define MUI_WELCOMEPAGE_TEXT "Click next to run the ecc installation"
