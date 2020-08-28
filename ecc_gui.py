@@ -270,7 +270,7 @@ if __name__ == "__main__":
             print("ilastik dir:", settings.ilastik_dir)            
             p = sp.Popen(path)
             print("Started ilastik [PID={}]".format(p.pid))
-            time.sleep(10)
+            time.sleep(3)
 
         elif selected == choices[1]:
             apply_classifier(settings)
