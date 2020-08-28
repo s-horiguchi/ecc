@@ -27,14 +27,13 @@ Var StartMenuFolder
 
 Function CreateDesktopShortCut
  
-  CreateShortCut "$DESKTOP\ecc.lnk" "$INSTDIR\Advanced.exe" "" 
+  CreateShortCut "$DESKTOP\ecc.lnk" "$INSTDIR\ecc_gui.exe" ""
  
 FunctionEnd
 
 
 ;------- Pages -------
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 
 ;Start Menu Folder Page Configuration
