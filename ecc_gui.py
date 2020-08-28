@@ -2,7 +2,7 @@ from ecc.ilastik_wrapper import PixelClassifier
 from ecc.cellfinder import CellFinder
 import easygui
 from easygui import EgStore
-import sys, os.path, glob
+import sys, os.path, glob, time
 import multiprocessing as mp
 import subprocess as sp
 
@@ -270,6 +270,7 @@ if __name__ == "__main__":
             print("ilastik dir:", settings.ilastik_dir)            
             p = sp.Popen(path)
             print("Started ilastik [PID={}]".format(p.pid))
+            time.sleep(10)
 
         elif selected == choices[1]:
             apply_classifier(settings)
