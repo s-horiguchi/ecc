@@ -9,8 +9,8 @@ import subprocess as sp
 
 class Settings(EgStore):
     def __init__(self, filename="settings_ecc.txt"):
-        ilastik_list = glob.glob("c:/Program Files/ilastik-*")
-        self.ilastik_dir = ilastik_list[0] if ilastik_list else ""
+        ilastik_list = sorted(glob.glob("c:/Program Files/ilastik-*"))
+        self.ilastik_dir = ilastik_list[-1] if ilastik_list else ""
         self.projfile = ""
         self.rawimg = ""
         self.out_probimg = ""
